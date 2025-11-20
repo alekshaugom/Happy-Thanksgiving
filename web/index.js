@@ -8,7 +8,7 @@ harperImage.src = 'harper-dog.png';
 const GRAVITY = 0.6;
 const JUMP_FORCE = -12; // Initial velocity when jumping
 const GROUND_HEIGHT = 50; // Height of the ground from bottom
-const GAME_SPEED_INITIAL = 3;
+const GAME_SPEED_INITIAL = 5;
 const SPAWN_RATE_MIN = 1000; // ms
 const SPAWN_RATE_MAX = 2500; // ms
 
@@ -29,9 +29,23 @@ const dog = {
 	width: 40,
 	height: 40,
 	velocityY: 0,
+	velocityX: 0, // Horizontal velocity
 	isJumping: false,
 	color: '#00C3FF' // Harper Blue
 };
+
+// Input State
+const keys = {
+	ArrowUp: false,
+	Space: false,
+	ArrowLeft: false,
+	ArrowRight: false
+};
+
+// Mobile Check
+function isMobile() {
+	return window.innerWidth <= 850;
+}
 
 // Obstacle Types
 const obstacleTypes = [
@@ -51,6 +65,8 @@ const playerNameInput = document.getElementById('player-name');
 const submitScoreBtn = document.getElementById('submit-score-btn');
 const playAgainBtn = document.getElementById('play-again-btn');
 const submissionStatus = document.getElementById('submission-status');
+const mobileControls = document.getElementById('mobile-controls');
+const mobileJumpBtn = document.getElementById('mobile-jump-btn');
 
 // Initialization
 function init() {
@@ -67,15 +83,42 @@ function init() {
 	}
 
 	// Event Listeners
-	document.addEventListener('keydown', handleInput);
-	document.addEventListener('touchstart', handleTouch);
+	document.addEventListener('keydown', handleKeyDown);
+	document.addEventListener('keyup', handleKeyUp);
+	// document.addEventListener('touchstart', handleTouch); // Replaced by button
 	document.getElementById('start-game-btn').addEventListener('click', startGame);
 	submitScoreBtn.addEventListener('click', submitScore);
 	playAgainBtn.addEventListener('click', resetGame);
 	document.getElementById('my-history-btn').addEventListener('click', showPlayerHistory);
 
+	// Mobile Controls
+	mobileJumpBtn.addEventListener('touchstart', (e) => {
+		e.preventDefault(); // Prevent mouse emulation
+		handleMobileJump();
+	});
+	mobileJumpBtn.addEventListener('mousedown', (e) => {
+		e.preventDefault();
+		handleMobileJump();
+	});
+
+	// Resize listener
+	window.addEventListener('resize', handleResize);
+	handleResize(); // Initial check
+
 	// Initial Draw
 	draw();
+}
+
+function handleResize() {
+	// Adjust canvas size logic if needed, but CSS handles display size.
+	// We might want to reset dog position if it goes out of bounds on resize?
+	// For now, just ensure mobile controls visibility is correct via CSS media queries.
+
+	if (isMobile()) {
+		mobileControls.classList.remove('hidden');
+	} else {
+		mobileControls.classList.add('hidden');
+	}
 }
 
 async function showPlayerHistory() {
@@ -124,8 +167,15 @@ function startGame() {
 	obstacles = [];
 	gameSpeed = GAME_SPEED_INITIAL;
 
+	// Reset dog horizontal position
+	dog.x = 50;
+
 	startOverlay.classList.add('hidden');
 	gameOverOverlay.classList.add('hidden');
+
+	if (isMobile()) {
+		mobileControls.classList.remove('hidden');
+	}
 
 	gameLoop();
 }
@@ -137,27 +187,44 @@ function resetGame() {
 	obstacles = [];
 	dog.y = canvas.height - GROUND_HEIGHT - dog.height;
 	dog.velocityY = 0;
+	dog.x = 50;
 
 	gameOverOverlay.classList.add('hidden');
 	startOverlay.classList.remove('hidden');
 	scoreDisplay.textContent = 'Score: 0';
 	submissionStatus.textContent = '';
 
+	// Hide mobile controls on reset (shown when game starts)
+	// Actually keep them hidden until start
+	mobileControls.classList.add('hidden');
+
 	draw();
 }
 
-function handleInput(e) {
-	if (e.code === 'Space' || e.code === 'ArrowUp') {
+function handleKeyDown(e) {
+	if (keys.hasOwnProperty(e.code)) {
+		keys[e.code] = true;
+	}
+
+	if (['Space', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyD'].includes(e.code)) {
 		e.preventDefault(); // Prevent scrolling
 		if (!isGameRunning && !isGameOver && !startOverlay.classList.contains('hidden')) {
 			startGame();
 		} else if (isGameRunning) {
-			jump();
+			if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+				jump();
+			}
 		}
 	}
 }
 
-function handleTouch(e) {
+function handleKeyUp(e) {
+	if (keys.hasOwnProperty(e.code)) {
+		keys[e.code] = false;
+	}
+}
+
+function handleMobileJump() {
 	if (!isGameRunning && !isGameOver && !startOverlay.classList.contains('hidden')) {
 		startGame();
 	} else if (isGameRunning) {
@@ -198,6 +265,19 @@ function update() {
 	// Dog Physics
 	dog.velocityY += GRAVITY;
 	dog.y += dog.velocityY;
+
+	// Horizontal Movement (Keyboard)
+	const moveSpeed = 5;
+	if (keys.ArrowLeft || keys.KeyA) {
+		dog.x -= moveSpeed;
+	}
+	if (keys.ArrowRight || keys.KeyD) {
+		dog.x += moveSpeed;
+	}
+
+	// Boundaries
+	if (dog.x < 0) dog.x = 0;
+	if (dog.x + dog.width > canvas.width) dog.x = canvas.width - dog.width;
 
 	// Ground Collision
 	if (dog.y > canvas.height - GROUND_HEIGHT - dog.height) {
@@ -296,6 +376,7 @@ function gameOver() {
 
 	finalScoreSpan.textContent = score;
 	gameOverOverlay.classList.remove('hidden');
+	mobileControls.classList.add('hidden'); // Hide jump button on game over
 }
 
 // API Integration
