@@ -8,7 +8,7 @@ harperImage.src = 'harper-dog.png';
 const GRAVITY = 0.6;
 const JUMP_FORCE = -12; // Initial velocity when jumping
 const GROUND_HEIGHT = 50; // Height of the ground from bottom
-const GAME_SPEED_INITIAL = 5;
+const GAME_SPEED_INITIAL = 3;
 const SPAWN_RATE_MIN = 1000; // ms
 const SPAWN_RATE_MAX = 2500; // ms
 
