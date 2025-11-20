@@ -225,11 +225,14 @@ function update() {
 		}
 
 		// Collision Detection
+		// Tighter hitbox: require visual overlap
+		const hitPadding = 10; // Pixels to shrink the hitbox by on each side
+
 		if (
-			dog.x < obs.x + obs.width &&
-			dog.x + dog.width > obs.x &&
-			dog.y < obs.y + obs.height &&
-			dog.y + dog.height > obs.y
+			dog.x + hitPadding < obs.x + obs.width - hitPadding &&
+			dog.x + dog.width - hitPadding > obs.x + hitPadding &&
+			dog.y + hitPadding < obs.y + obs.height - hitPadding &&
+			dog.y + dog.height - hitPadding > obs.y + hitPadding
 		) {
 			gameOver();
 		}
