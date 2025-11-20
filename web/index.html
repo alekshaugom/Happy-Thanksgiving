@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harper Thanksgiving Run</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Harper Thanksgiving Run 🦃</h1>
+            <p>Help Harper collect points and avoid Thanksgiving obstacles!</p>
+        </header>
+
+        <div id="game-container">
+            <canvas id="gameCanvas" width="800" height="400"></canvas>
+            <div id="score-display">Score: 0</div>
+
+            <div id="game-over-overlay" class="hidden">
+                <h2>Game Over!</h2>
+                <p>Final Score: <span id="final-score">0</span></p>
+                <div class="input-group">
+                    <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
+                    <button id="submit-score-btn">Submit Score</button>
+                </div>
+                <button id="play-again-btn">Play Again</button>
+                <button id="my-history-btn" style="background-color: #8D6E63;">My History</button>
+                <p id="submission-status"></p>
+            </div>
+
+            <div id="start-overlay">
+                <h2>Ready to Run?</h2>
+                <p>Press Space or Up Arrow to Jump</p>
+                <button id="start-game-btn">Start Game</button>
+            </div>
+        </div>
+
+        <div class="leaderboards">
+            <div class="leaderboard-section">
+                <h3>Top Runs</h3>
+                <table id="top-runs-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="leaderboard-section">
+                <h3>Cumulative Leaders</h3>
+                <table id="cumulative-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Total Score</th>
+                            <th>Runs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="player-history-section" class="hidden">
+            <h3>Your Recent Runs</h3>
+            <table id="player-history-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="index.js"></script>
+</body>
+
+</html>

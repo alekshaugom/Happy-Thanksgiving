@@ -1,0 +1,8 @@
+
+type GameRun @table @export {
+    id: ID @primaryKey
+    playerName: String @indexed
+    score: Int @indexed
+    durationSeconds: Int
+    createdAt: Long @createdTime @indexed
+}
